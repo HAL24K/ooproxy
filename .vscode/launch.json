@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "preLaunchTask": "Rust: cargo build",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/deps/ooproxy-e53d7a448be4c5fd",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LISTEN_URL": "0.0.0.0:8081",
+                "PROVIDER_URL": "http://identity",
+                "UPSTREAM_URL": "http://echo",
+                "RUST_LOG": "info"
+            }
+        },
+        {
+            "name": "Test",
+            "preLaunchTask": "Rust: cargo test",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/deps/ooproxy-5761885a2a048f86",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

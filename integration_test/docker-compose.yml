@@ -1,0 +1,59 @@
+version: '3.4'
+
+services:
+  echo:
+    image: jmalloc/echo-server
+    ports:
+      - "8080:8080"
+
+  proxy:
+    image: ooproxy
+    build:
+      context: ..
+    environment:
+      - LISTEN_URL=0.0.0.0:8081
+      - LISTEN_SSL_URL=0.0.0.0:4433
+      - PROVIDER_URL=http://identity
+      - UPSTREAM_URL=http://echo:8080
+      - CERT_FILE=test.pfx
+      - CERT_PASSWORD=idsrv3test
+      - RUST_LOG=info
+    links:
+      - identity
+      - echo
+    ports:
+      - "8081:8081"
+      - "4433:4433"
+    volumes:
+      - ./test.pfx:/test.pfx
+    depends_on:
+      - identity
+      - echo
+  
+  # Discovery: curl localhost/.well-known/openid-configuration
+  # JWKS: curl localhost/.well-known/openid-configuration/jwks
+  # Get token: curl -X POST -d "client_id=<client>&client_secret=<secret>&grant_type=client_credentials" localhost/connect/token
+  # Authenticate with token: curl -H "Authorization: Bearer ey..." "http://localhost:8081"
+  identity:
+    image: identityserver
+    links:
+      - sql
+    depends_on:
+      - sql
+    ports:
+      - "80:80"
+    environment:
+      - SigningKey=MIIKAgIBAzCCCb4GCSqGSIb3DQEHAaCCCa8EggmrMIIJpzCCBfgGCSqGSIb3DQEHAaCCBekEggXlMIIF4TCCBd0GCyqGSIb3DQEMCgECoIIE9jCCBPIwHAYKKoZIhvcNAQwBAzAOBAjnYG7CPWV2bQICB9AEggTQYxInbu3Ez6ewpVlLG/sqhwcfTK1N4qrnCW564hVkqvURvPl2/g4ObQSWnC7WBljIQpSPS45oSg99PcKLW8onKZMCOc3UY5hRyGBrVdtQGFDEDEetAiPBt33ITSBEFlMBvOPXQ57k0y/5J4gygOP7/QJ1q89kfoz3epg1ZxNwDP+xQznrWe7XlLUnitOQ8pwOHFiNsCpWPaW3NwXvqye/ue9/W2I2mldVxdod2Zyeyw0pnw1lDxnqevlLNYCx6gZFoTOZ/dLd5mh9uoDoBr80Yn0YB+3dOOxXuJacqXoar/X1n8dF3KTTNjipN2qi+erDQfuQfhhUbW1ol9oK+tP4iNQKNaMsnWGhdqNgj7l7dBOHazij8ACbA7TIIu1kYCzGILwxjUzHyPpRb1gFnC5qNjQ7RKzMqn/itMwoSruy9rcnAQ0DR9dsBH8vAsVAxOuDCULmIhzazHRi9BTvJiDhSz1WdwdjXORZcC3BZsGitKCbWWSz6lwz3jLyRraNVqUpDUMQ0Lx/iweGigXesA4DZuYzM4x5Y24PacTuaRgDpwBe5uHkewX1SXHV5Ja4lRVDR+aiasd38TZIdUYFfAQ6BMeZ/yZAEUv3cLPysXqJo1PXVKJIE3qo41nUMkb0IpOczniF+ArIWKC0zTdJa94SlCZjB72HkeU2DmzjuL1QyIzXBoOSsUBEp1WJdWgFBVguUfcIuo5M7z/qLxL7lyCeHoKTO4A+j8w2qtxxIjE5WesOA45mO+plpbvHA9/EY4I8nty7j+M1pNshapK8flgfSSuXkeEAMYw1U7D9ZFimFiQkFP7RfjEkQpNtLsQNcas+aSdPB7xg1TuvkymOvXqdBAgXmgz3rd9OWjzyt7SSAbmH9kqZmTQarLl3CD+jGDHPiAc20sHzOGy385fth2misLidkx/O9b5p2h3/cF9vOusrdXloegX4MNADYAOHKEqtvK+z/9JA+A7ArX01P5QwvmCSNCITh8x75hiKaCRDrUWxWiq7srRTjvCQQOgpIeZEzqV0YsDcIWmJJFc0gd3gJ7+hrYyLCfFBHyyv8nUYW8ph8HFGhmrE/utxDnIFUhIj2BQx1HvA4zoQhBRtYisKUuzaUaOofmHQLuVvjgy7v9JQCeIAFN1TG1lGqzsLUMwrKeQfLiPhTDmIt/rKxmCo4MnfblkeQ+6UeLStWF7oPcOVvnzEDB0Y1/Udjw4oEJxnhYNMxX2SM67vRiJBdugAddD4MQe/al86FWLGFtBWPopLjrZhwzmkI+QOLOssML8vozx2Py4ruhBjRRBXOhnAXHTnTh6Pp+iyzZ7LxzTOBA1HyBDUnW3zpScFQcdocoJ4NgQrfnq9VEqe+sMlG2bClnk5IQ70xe8i/dAnETENq9EdnbrNdyybgS+qh/PrBo34N2wNiZKiwj4yKAffEuRarH36IhSctYG+M6hCnQX3PWB/7AQ2NI6jBPkNFmlIpxugRNH/1Fyic6h1tls41zSA6nGYYep90p9K6uSpDYg2Ay2fN500JBn73tkdfAopGAP71OGy2DR4IZH4AwZOz1dyQSaI5+pre3pxNhVIpg6GjC9ecx0PG/PetaKeioXgJ3Vpp8kaWHFXnUW2npllyJHwbPTI8diStIhV/zf5gYaIRQQxgdMwEwYJKoZIhvcNAQkVMQYEBAEAAAAwXQYJKoZIhvcNAQkUMVAeTgB0AGUALQBkAGEAMwA3ADEAZAA5AGYALQBjAGYAYgA4AC0ANAA5AGQANQAtAGEAZAA4ADkALQBlADUAZQBlAGUAOAAwADEAYwBiADYANjBdBgkrBgEEAYI3EQExUB5OAE0AaQBjAHIAbwBzAG8AZgB0ACAAUwBvAGYAdAB3AGEAcgBlACAASwBlAHkAIABTAHQAbwByAGEAZwBlACAAUAByAG8AdgBpAGQAZQByMIIDpwYJKoZIhvcNAQcGoIIDmDCCA5QCAQAwggONBgkqhkiG9w0BBwEwHAYKKoZIhvcNAQwBAzAOBAgPvEt2wFv9vQICB9CAggNg5RqNZ6vQJ7cqoPHquqoy5L13lBjV1cITo5OeMtlXU9B2FAyq4XrmpRlvdEJXTjYoLIkRUCh+396ZMJoCUeDf+Dako02gS3mXJnP3fJriMSwyo0d3Xqt8MAIkKoqA1bQ6vsereBVtakCiBE3SxInMkv+tFEonOvD/mTJFYZqQq2NXJn5ard4FkE+1Pz4eEJi/51CxEp/WcBLneQ2RxAmY37ll6gOET59XQvq7jbl7gWN/IEL9P22JXNswGMuJ04vdYmER+ldnpukQb9VBRIIYcCyk8IhavE+pYx2WrLuuD0grg7V+/Kwevy9au86/ZjDoG8hiI5glndslkZbGIhO2eBFB/j0Ao/ICXVXym+pT58iaKXyJzq0hfVJ82o0EcQQ9HEprVrzpM3cJMh2bVxF3djReOvjeCu23vMqd5g7KuXXsmCNVrm8EpkwoGP6RAxlBRCJ8zP3/tBshr90L6oy1lVzJzB8HVHMUBX86OcAmggeqENl7Tq4YfG+EsOxKRs7PiI5QBMjCEBdh1B6WViEhbpdUS/yOCcYIa69QfN/CkUTdPcu5swxPDnl0yv+oSKJt+7EgEbDQmZeW3Wtp6TYbxVnLu/LK0maiTjnbRwMvIEKb5URO0hOsYUm0Iyr+EToFTFqwPAC15QUhpi86uI1ZJ6I+dZUbHyoUinupVjHvtBW2REb27myJUiTZH73iiNfoA1sLEC2zeGkTuXb2+qWrVIGZf/74t1HAbAMuQm/9gGG3YxKYZq1Px2EF22agPnDd+A9FbNT0zRqDoPcbc3sgvH9iRKHp9xeu35FZWDbzVX+kp+kFN2JEFnOfVUUoFNuklBuFLK2c8TRzsW+VLz288NoHTLhV9h/Ef7360CuOkaNpTEdo/ZsYWPZ2Ck8Z/fmH/R3KkURh2+uIRSCy/qczKVHz8LlEP1UqtI46PF9n517ULJusqtqLseP+H0H3IsADOTRzvt3BNbRvWeQm7XbZTCsByCzY0TdE+O5oLeyrLWNWAUJr3RsXwb2ip+oWMD2dF06jjiZ8NW3ct7Ed/cH4k1KLqoMxI5R5wk2kNG9cWOk6Gkk1ijLux+bxjzyddi7pBcQV3j1Z6DA2ZOiM+1BeWWvk2FhCzfuNoqY78eKCQ3nQhh1Z5vVEQuqHPdi8tFU0MDswHzAHBgUrDgMCGgQUIXg8gCWpI0kknMURpF+qmosoW14EFC3OZtPqayoz/t6Bu+J9rRVsdY3UAgIH0A==
+      - Seed=1
+      - PublicOrigin=http://identity
+      - FromAddress=admin@hal24k.com
+      - ConnectionString=server=sql;database=identity;User Id=SA;Password=_TestTest24kk42_
+      - ASPNETCORE_ENVIRONMENT=Development
+  
+  sql:
+    image: microsoft/mssql-server-linux:2017-latest
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=y
+      - SA_PASSWORD=_TestTest24kk42_
