@@ -1,351 +1,410 @@
 {
-	"info": {
-		"_postman_id": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
-		"name": "ooproxy",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Authentication",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "032f8b3a-1008-4517-99a5-c8d7700e7ada",
-						"exec": [
-							"pm.globals.set(\"token\", pm.response.json()[\"access_token\"]);",
-							"",
-							"pm.test(\"Successfull request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "client_id",
-							"value": "client",
-							"type": "text"
-						},
-						{
-							"key": "client_secret",
-							"value": "secret",
-							"type": "text"
-						},
-						{
-							"key": "grant_type",
-							"value": "client_credentials",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{identity}}/connect/token",
-					"host": [
-						"{{identity}}"
-					],
-					"path": [
-						"connect",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "290c12bd-62bc-4ae7-be86-b629811e93f1",
-						"exec": [
-							"pm.test(\"Successfull request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-							"});",
-							"",
-							"pm.test(\"Proxied GET request\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"HTTP/1.1 GET /test\");",
-							"});",
-							"",
-							"pm.test(\"Proxied body\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"bodytest\");",
-							"});",
-							"",
-							"pm.test(\"Proxied header\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"Content-Type: application/graphql\");",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/graphql",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "bodytest"
-				},
-				"url": {
-					"raw": "{{proxy}}/test",
-					"host": [
-						"{{proxy}}"
-					],
-					"path": [
-						"test"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Post",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "0a86fd56-3f85-4326-867b-69caecc21385",
-						"exec": [
-							"pm.test(\"Successfull request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-							"});",
-							"",
-							"pm.test(\"Proxied GET request\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"HTTP/1.1 POST /test\");",
-							"});",
-							"",
-							"pm.test(\"Proxied body\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"bodytest\");",
-							"});",
-							"",
-							"pm.test(\"Proxied header\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"Content-Type: application/graphql\");",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/graphql",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "bodytest"
-				},
-				"url": {
-					"raw": "{{proxy}}/test",
-					"host": [
-						"{{proxy}}"
-					],
-					"path": [
-						"test"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Put",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "01b228a9-79df-44cd-a612-a1d47e7d8fd4",
-						"exec": [
-							"pm.test(\"Successfull request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-							"});",
-							"",
-							"pm.test(\"Proxied GET request\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"HTTP/1.1 PUT /test\");",
-							"});",
-							"",
-							"pm.test(\"Proxied body\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"bodytest\");",
-							"});",
-							"",
-							"pm.test(\"Proxied header\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"Content-Type: application/graphql\");",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/graphql",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "bodytest"
-				},
-				"url": {
-					"raw": "{{proxy}}/test",
-					"host": [
-						"{{proxy}}"
-					],
-					"path": [
-						"test"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "272bb600-80a4-491e-b88c-2794f3c6bf2d",
-						"exec": [
-							"pm.test(\"Successfull request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
-							"});",
-							"",
-							"pm.test(\"Proxied GET request\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"HTTP/1.1 DELETE /test\");",
-							"});",
-							"",
-							"pm.test(\"Proxied body\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"bodytest\");",
-							"});",
-							"",
-							"pm.test(\"Proxied header\", function () {",
-							"    pm.expect(pm.response.text()).to.include(\"Content-Type: application/graphql\");",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/graphql",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "bodytest"
-				},
-				"url": {
-					"raw": "{{proxy}}/test",
-					"host": [
-						"{{proxy}}"
-					],
-					"path": [
-						"test"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "No auth",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "f908e11a-793c-4913-b13a-fabf2be8d9eb",
-						"exec": [
-							"pm.test(\"Status code is 403\", function () {",
-							"    pm.response.to.have.status(403);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{proxy}}/test",
-					"host": [
-						"{{proxy}}"
-					],
-					"path": [
-						"test"
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{token}}",
-				"type": "string"
-			}
-		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"id": "6a787da6-c1f7-4064-939e-49ce3ed89c10",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"id": "8dcce3db-c180-4991-a65a-619bba0fc402",
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	]
+    "id": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+    "name": "ooproxy",
+    "description": null,
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "events": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "id": "6a787da6-c1f7-4064-939e-49ce3ed89c10",
+                "type": "text\/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "id": "8dcce3db-c180-4991-a65a-619bba0fc402",
+                "type": "text\/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variables": [],
+    "order": [
+        "4c0651d4-d013-4aaa-bd18-65b29670fcea",
+        "beb18fb8-33bb-4c4a-855e-4a7324eea254",
+        "1a887c35-7ee3-4fa9-bd37-8c9cfe8fe03c",
+        "bcdd790a-3b1c-4a13-b6d4-9c17c34affb3",
+        "efb7d2b7-0262-499c-b5e6-d31bac504268",
+        "52307386-2e78-4beb-a33f-35512955e360",
+        "05c3a390-612e-41bb-b23a-c09759d138cf"
+    ],
+    "folders_order": [],
+    "folders": [],
+    "requests": [
+        {
+            "id": "05c3a390-612e-41bb-b23a-c09759d138cf",
+            "name": "No auth",
+            "url": "{{proxy}}\/test",
+            "description": null,
+            "data": null,
+            "dataMode": null,
+            "headerData": [],
+            "method": "GET",
+            "pathVariableData": [],
+            "queryParams": [],
+            "auth": {
+                "type": "noauth",
+                "noauth": []
+            },
+            "events": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "f908e11a-793c-4913-b13a-fabf2be8d9eb",
+                        "exec": [
+                            "pm.test(\"Status code is 403\", function () {",
+                            "    pm.response.to.have.status(403);",
+                            "});"
+                        ],
+                        "type": "text\/javascript"
+                    }
+                }
+            ],
+            "folder": null,
+            "preRequestScript": null,
+            "tests": "pm.test(\"Status code is 403\", function () {\n    pm.response.to.have.status(403);\n});",
+            "currentHelper": null,
+            "helperAttributes": null,
+            "collectionId": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+            "headers": "",
+            "pathVariables": []
+        },
+        {
+            "id": "1a887c35-7ee3-4fa9-bd37-8c9cfe8fe03c",
+            "name": "Post",
+            "url": "{{proxy}}\/test",
+            "description": null,
+            "data": [],
+            "dataMode": "raw",
+            "headerData": [
+                {
+                    "key": "Content-Type",
+                    "value": "application\/graphql",
+                    "type": "text"
+                }
+            ],
+            "method": "POST",
+            "pathVariableData": [],
+            "queryParams": [],
+            "auth": null,
+            "events": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "0a86fd56-3f85-4326-867b-69caecc21385",
+                        "exec": [
+                            "pm.test(\"Successfull request\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied GET request\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 POST \/test\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied body\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"bodytest\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied header\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");",
+                            "});"
+                        ],
+                        "type": "text\/javascript"
+                    }
+                }
+            ],
+            "folder": null,
+            "preRequestScript": null,
+            "tests": "pm.test(\"Successfull request\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Proxied GET request\", function () {\n    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 POST \/test\");\n});\n\npm.test(\"Proxied body\", function () {\n    pm.expect(pm.response.text()).to.include(\"bodytest\");\n});\n\npm.test(\"Proxied header\", function () {\n    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");\n});",
+            "currentHelper": null,
+            "helperAttributes": null,
+            "collectionId": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+            "rawModeData": "bodytest",
+            "headers": "Content-Type: application\/graphql\n",
+            "pathVariables": []
+        },
+        {
+            "id": "4c0651d4-d013-4aaa-bd18-65b29670fcea",
+            "name": "Authentication",
+            "url": "{{identity}}\/connect\/token",
+            "description": null,
+            "data": [
+                {
+                    "key": "client_id",
+                    "value": "client",
+                    "type": "text"
+                },
+                {
+                    "key": "client_secret",
+                    "value": "secret",
+                    "type": "text"
+                },
+                {
+                    "key": "grant_type",
+                    "value": "client_credentials",
+                    "type": "text"
+                }
+            ],
+            "dataMode": "params",
+            "headerData": [],
+            "method": "POST",
+            "pathVariableData": [],
+            "queryParams": [],
+            "auth": {
+                "type": "noauth"
+            },
+            "events": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "032f8b3a-1008-4517-99a5-c8d7700e7ada",
+                        "exec": [
+                            "pm.globals.set(\"token\", pm.response.json()[\"access_token\"]);",
+                            "",
+                            "pm.test(\"Successfull request\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});"
+                        ],
+                        "type": "text\/javascript"
+                    }
+                }
+            ],
+            "folder": null,
+            "preRequestScript": null,
+            "tests": "pm.globals.set(\"token\", pm.response.json()[\"access_token\"]);\n\npm.test(\"Successfull request\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});",
+            "currentHelper": null,
+            "helperAttributes": null,
+            "collectionId": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+            "headers": "",
+            "pathVariables": []
+        },
+        {
+            "id": "52307386-2e78-4beb-a33f-35512955e360",
+            "name": "Delete",
+            "url": "{{proxy}}\/test",
+            "description": null,
+            "data": [],
+            "dataMode": "raw",
+            "headerData": [
+                {
+                    "key": "Content-Type",
+                    "value": "application\/graphql",
+                    "type": "text"
+                }
+            ],
+            "method": "DELETE",
+            "pathVariableData": [],
+            "queryParams": [],
+            "auth": null,
+            "events": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "272bb600-80a4-491e-b88c-2794f3c6bf2d",
+                        "exec": [
+                            "pm.test(\"Successfull request\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied GET request\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 DELETE \/test\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied body\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"bodytest\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied header\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");",
+                            "});"
+                        ],
+                        "type": "text\/javascript"
+                    }
+                }
+            ],
+            "folder": null,
+            "preRequestScript": null,
+            "tests": "pm.test(\"Successfull request\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Proxied GET request\", function () {\n    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 DELETE \/test\");\n});\n\npm.test(\"Proxied body\", function () {\n    pm.expect(pm.response.text()).to.include(\"bodytest\");\n});\n\npm.test(\"Proxied header\", function () {\n    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");\n});",
+            "currentHelper": null,
+            "helperAttributes": null,
+            "collectionId": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+            "rawModeData": "bodytest",
+            "headers": "Content-Type: application\/graphql\n",
+            "pathVariables": []
+        },
+        {
+            "id": "bcdd790a-3b1c-4a13-b6d4-9c17c34affb3",
+            "name": "Send File",
+            "url": "{{proxy}}\/test",
+            "description": null,
+            "data": null,
+            "dataMode": "binary",
+            "headerData": [
+                {
+                    "key": "Content-Type",
+                    "name": "Content-Type",
+                    "value": "application\/x-www-form-urlencoded",
+                    "description": "",
+                    "type": "text"
+                }
+            ],
+            "method": "POST",
+            "pathVariableData": [],
+            "queryParams": [],
+            "auth": null,
+            "events": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "0a86fd56-3f85-4326-867b-69caecc21385",
+                        "exec": [
+                            "pm.test(\"Successfull request\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied GET request\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 POST \/test\");",
+                            "});"
+                        ],
+                        "type": "text\/javascript"
+                    }
+                }
+            ],
+            "folder": null,
+            "preRequestScript": null,
+            "tests": "pm.test(\"Successfull request\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Proxied GET request\", function () {\n    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 POST \/test\");\n});",
+            "currentHelper": null,
+            "helperAttributes": null,
+            "collectionId": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+            "headers": "Content-Type: application\/x-www-form-urlencoded\n",
+            "pathVariables": []
+        },
+        {
+            "id": "beb18fb8-33bb-4c4a-855e-4a7324eea254",
+            "name": "Get",
+            "url": "{{proxy}}\/test",
+            "description": null,
+            "data": [],
+            "dataMode": "raw",
+            "headerData": [
+                {
+                    "key": "Content-Type",
+                    "value": "application\/graphql",
+                    "type": "text"
+                }
+            ],
+            "method": "GET",
+            "pathVariableData": [],
+            "queryParams": [],
+            "auth": null,
+            "events": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "290c12bd-62bc-4ae7-be86-b629811e93f1",
+                        "exec": [
+                            "pm.test(\"Successfull request\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied GET request\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 GET \/test\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied body\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"bodytest\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied header\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");",
+                            "});"
+                        ],
+                        "type": "text\/javascript"
+                    }
+                }
+            ],
+            "folder": null,
+            "protocolProfileBehavior": {
+                "disableBodyPruning": true
+            },
+            "preRequestScript": null,
+            "tests": "pm.test(\"Successfull request\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Proxied GET request\", function () {\n    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 GET \/test\");\n});\n\npm.test(\"Proxied body\", function () {\n    pm.expect(pm.response.text()).to.include(\"bodytest\");\n});\n\npm.test(\"Proxied header\", function () {\n    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");\n});",
+            "currentHelper": null,
+            "helperAttributes": null,
+            "collectionId": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+            "rawModeData": "bodytest",
+            "headers": "Content-Type: application\/graphql\n",
+            "pathVariables": []
+        },
+        {
+            "id": "efb7d2b7-0262-499c-b5e6-d31bac504268",
+            "name": "Put",
+            "url": "{{proxy}}\/test",
+            "description": null,
+            "data": [],
+            "dataMode": "raw",
+            "headerData": [
+                {
+                    "key": "Content-Type",
+                    "value": "application\/graphql",
+                    "type": "text"
+                }
+            ],
+            "method": "PUT",
+            "pathVariableData": [],
+            "queryParams": [],
+            "auth": null,
+            "events": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "01b228a9-79df-44cd-a612-a1d47e7d8fd4",
+                        "exec": [
+                            "pm.test(\"Successfull request\", function () {",
+                            "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied GET request\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 PUT \/test\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied body\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"bodytest\");",
+                            "});",
+                            "",
+                            "pm.test(\"Proxied header\", function () {",
+                            "    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");",
+                            "});"
+                        ],
+                        "type": "text\/javascript"
+                    }
+                }
+            ],
+            "folder": null,
+            "preRequestScript": null,
+            "tests": "pm.test(\"Successfull request\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n\npm.test(\"Proxied GET request\", function () {\n    pm.expect(pm.response.text()).to.include(\"HTTP\/1.1 PUT \/test\");\n});\n\npm.test(\"Proxied body\", function () {\n    pm.expect(pm.response.text()).to.include(\"bodytest\");\n});\n\npm.test(\"Proxied header\", function () {\n    pm.expect(pm.response.text()).to.include(\"Content-Type: application\/graphql\");\n});",
+            "currentHelper": null,
+            "helperAttributes": null,
+            "collectionId": "b67787ba-aed7-4fe4-a0f5-81f1da7ee5c1",
+            "rawModeData": "bodytest",
+            "headers": "Content-Type: application\/graphql\n",
+            "pathVariables": []
+        }
+    ]
 }
