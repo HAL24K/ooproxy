@@ -15,15 +15,15 @@
 /// along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
 use actix_web::Error;
-use error::{ErrorForbidden, ErrorInternalServerError};
 use bytes::Bytes;
 use jsonwebtoken::{decode, decode_header, Algorithm, Validation};
 use serde_json::Value;
 use std::str;
-use collections::HashMap;
-use cmp::{Eq, PartialEq};
-use hash::{Hash, Hasher};
-use str::FromStr;
+use crate::error::{ErrorForbidden, ErrorInternalServerError};
+use crate::collections::HashMap;
+use crate::cmp::{Eq, PartialEq};
+use crate::hash::{Hash, Hasher};
+use crate::str::FromStr;
 
 #[derive(Clone, Copy)]
 /// A wrapper around the token algorithm that adds hashing, eq, fromstr parsing, and methods that determine wheter it's a symmetric or asymmetric algorithm
@@ -113,7 +113,7 @@ pub fn has_missing_kid(token_str: &str, keys: &HashMap<WrappedAlgorithm, HashMap
             let wrapped_alg = WrappedAlgorithm(header.alg);
             if wrapped_alg.is_asymmetric() {
                 header.kid
-                      .and_then(|id| keys.get(&wrapped_alg).map(|inner_map| !inner_map.contains_key(&id)))
+                    .and_then(|id| keys.get(&wrapped_alg).map(|inner_map| !inner_map.contains_key(&id)))
             }
             else {
                 Some(false)

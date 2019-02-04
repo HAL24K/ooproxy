@@ -3,7 +3,6 @@ target
 .gitignore
 .vscode
 README.md
-Dockerfile
 integration_test
 docker-compose.yml
 ooproxy.code-workspace

@@ -14,46 +14,31 @@
 /// You should have received a copy of the GNU General Public License
 /// along with this program.  If not, see <https://www.gnu.org/licenses/>.
  
-extern crate actix;
-extern crate actix_web;
-#[macro_use]
-extern crate log;
-extern crate env_logger;
-extern crate futures;
-extern crate jsonwebtoken;
-extern crate serde;
-extern crate serde_json;
-#[macro_use]
-extern crate serde_derive;
-extern crate bytes;
-extern crate base64;
-extern crate num;
-extern crate config;
-#[cfg(feature = "tls")]
-extern crate native_tls;
-
 mod openid;
 mod token;
 
 use actix_web::{client, error, middleware, server, App, AsyncResponder, Body, Error, HttpMessage, HttpRequest, HttpResponse, Responder};
-use error::{ErrorForbidden, ErrorInternalServerError};
-use client::ClientRequest;
 use bytes::Bytes;
 use futures::{Future, Stream, future};
-use future::Either;
 use jsonwebtoken::{Algorithm, Validation};
 use std::time::{Duration, Instant};
 use serde::Deserialize;
-use token::{WrappedAlgorithm, validate_token, get_token_str, has_missing_kid};
-use openid::openid_connect_retrieve;
+use log::info;
 use std::{cmp, hash, str, sync, collections, fmt};
-use collections::HashMap;
-use sync::{Arc, RwLock};
 use config::{FileFormat, ConfigError};
 #[cfg(feature = "tls")]
 use native_tls::{TlsAcceptor, Identity};
 #[cfg(feature = "tls")]
 use std::io::Read;
+#[cfg(not(feature = "tls"))]
+use log::error;
+use crate::error::{ErrorForbidden, ErrorInternalServerError};
+use crate::client::ClientRequest;
+use crate::collections::HashMap;
+use crate::sync::{Arc, RwLock};
+use crate::future::Either;
+use crate::token::{WrappedAlgorithm, validate_token, get_token_str, has_missing_kid};
+use crate::openid::openid_connect_retrieve;
 
 /// The state of the proxy
 struct ProxyState {

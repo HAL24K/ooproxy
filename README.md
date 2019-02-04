@@ -68,7 +68,7 @@ Run outside docker (after building, use a settings.toml file):
 
 If you want to run the proxy inside docker:
 
-`docker build . -t ooproxy`
+`docker build . -t ooproxy --build-arg features=`
 
 For a docker image with TLS use:
 
@@ -81,6 +81,13 @@ Or, if you want to run the proxy outside of docker:
 With TLS:
 
 `cargo install ooproxy --all-features`
+
+## How to authenticate
+
+To authenticate to your APIs, use the client credentials flow, using the correct credentials for the client (indicated by client and secret). Example with curl:
+
+* Get a token from your identity server: curl -X POST -d "client_id=client&client_secret=secret&grant_type=client_credentials" https://identity/connect/token
+* Authenticate with token: curl -H "Authorization: Bearer ey..." "https://proxy/my/url
 
 ## Copyright
 

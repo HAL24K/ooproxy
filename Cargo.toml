@@ -1,6 +1,6 @@
 [package]
 name = "ooproxy"
-version = "1.0.2"
+version = "1.0.3"
 authors = ["Tim Stokman <tim.stokman@hal24k.com>"]
 readme = "README.md"
 repository = "https://github.com/HAL24K/ooproxy"
@@ -8,13 +8,12 @@ homepage = "https://github.com/HAL24K/ooproxy"
 keywords = ["openid", "oauth", "oauth2", "proxy"]
 description = "A reverse OpenID Connect and OAuth 2 proxy, implementing the client-credentials flow."
 license = "GPL-3.0-only"
+edition = "2018"
 
 [dependencies]
 actix-web = "0.7"
 jsonwebtoken = "5"
 serde_json = "1"
-serde_derive = "1"
-serde = "1"
 log = "0.4"
 env_logger = "0.6"
 futures = "0.1"
@@ -23,6 +22,7 @@ bytes = "0.4"
 base64 = "0.10"
 num = "0.2"
 config = "0.9"
+serde = { version = "1", features = ["derive"] }
 native-tls = { version = "0.2", optional = true }
 
 [features]

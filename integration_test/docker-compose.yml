@@ -49,6 +49,7 @@ services:
       - FromAddress=admin@hal24k.com
       - ConnectionString=server=sql;database=identity;User Id=SA;Password=_TestTest24kk42_
       - ASPNETCORE_ENVIRONMENT=Development
+      - DatabaseEncryptionKey=5k0XHn0FoF/LDZt2dfHiwMf+nLEls5Zlk377kAaJPZo=
   
   sql:
     image: microsoft/mssql-server-linux:2017-latest

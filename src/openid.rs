@@ -15,7 +15,6 @@
 /// along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 use actix_web::{client, Error, HttpMessage};
-use error::ErrorInternalServerError;
 use bytes::{Bytes, BytesMut, BufMut};
 use futures;
 use base64;
@@ -23,10 +22,12 @@ use serde_json;
 use futures::Future;
 use num::BigInt;
 use num::bigint::Sign;
-use token::WrappedAlgorithm;
 use std::{str, mem};
-use collections::HashMap;
 use std::iter::Iterator;
+use serde::Deserialize;
+use crate::collections::HashMap;
+use crate::error::ErrorInternalServerError;
+use crate::token::WrappedAlgorithm;
 
 /// The resulting information from retrieving and parsing the OpenID endpoints, contains the issuer and signing keys
 pub struct OpenIDInfo {
@@ -119,14 +120,15 @@ fn openid_connect_retrieve_jwks(jwks_uri: &str) -> impl Future<Item = HashMap<Wr
 fn decode_web_keyset(jwk_str: &Bytes) -> Result<HashMap<WrappedAlgorithm, HashMap<String, Bytes>>, Error> {
     let key_set: JSONWebKeySet = 
         serde_json::from_slice(jwk_str)
-                   .map_err(|e| ErrorInternalServerError(format!("failed decoding web keys: {}", e)))?;
+                .map_err(|e| ErrorInternalServerError(format!("failed decoding web keys: {}", e)))?;
 
     let mut key_map: HashMap<WrappedAlgorithm, HashMap<String, Bytes>> = HashMap::with_capacity(2);
 
     let mut i = ::std::i32::MIN;
     for (web_key, alg) in get_usable_web_keys(key_set) {
         let wk = decode_web_key(&web_key)?;
-        key_map.entry(alg).or_insert_with(HashMap::new).insert(web_key.kid.unwrap_or(i.to_string()), wk);
+        let inner_map = key_map.entry(alg).or_insert_with(HashMap::new);
+        inner_map.insert(web_key.kid.unwrap_or(i.to_string()), wk);
         i = i + 1;
     }
 
@@ -138,8 +140,8 @@ fn get_usable_web_keys(key_set: JSONWebKeySet) -> impl Iterator<Item = (JSONWebK
     key_set.keys
            .into_iter()
            .filter(|web_key| web_key.kty == "RSA" &&
-                             web_key.usage.as_ref().map(|us| us == "sig").unwrap_or(true) &&
-                             web_key.key_ops.as_ref().map(|ko| ko.iter().any(|k| k == "verify")).unwrap_or(true))
+                               web_key.usage.as_ref().map(|us| us == "sig").unwrap_or(true) &&
+                               web_key.key_ops.as_ref().map(|ko| ko.iter().any(|k| k == "verify")).unwrap_or(true))
            .map(|web_key| (web_key.alg.parse::<WrappedAlgorithm>(), web_key))
            .filter(|(alg, _)| alg.as_ref().map(|a| a.is_asymmetric()).unwrap_or(false))
            .map(|(alg, web_key)| (web_key, alg.unwrap()))
@@ -184,8 +186,15 @@ fn encode_asn1_der_rsapublickey(n: &[u8], e: &[u8]) -> Bytes {
     const CONSTRUCTED_SEQUENCE_TAG: u8 = 0x10 | 0x20;
     const INTEGER_TAG: u8 = 0x2;
 
-    let int_buffers = [int_be_from_unsigned_to_signed(n), int_be_from_unsigned_to_signed(e)];
-    let inner_sequence_len = int_buffers.iter().map(|buff| buff.len() + asn1_length_size(buff.len()) + 1).sum();
+    let int_buffers = 
+        [
+            int_be_from_unsigned_to_signed(n), 
+            int_be_from_unsigned_to_signed(e)
+        ];
+    let inner_sequence_len = 
+        int_buffers.iter()
+                   .map(|buff| buff.len() + asn1_length_size(buff.len()) + 1)
+                   .sum();
     let total_len = inner_sequence_len + asn1_length_size(inner_sequence_len) + 1;
     let mut out = BytesMut::with_capacity(total_len);
     out.put_u8(CONSTRUCTED_SEQUENCE_TAG);
