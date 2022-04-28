@@ -1,5 +1,7 @@
 # ooproxy
 
+# Deprecated, no longer maintained
+
 A reverse OpenID Connect and OAuth 2 proxy, implementing the client-credentials flow (machine-to-machine authentication/authorization). It can be used to protect http-based APIs with an authentication mechanism. Because it only supports the client-credentials flow, there are no redirects when the authentication fails, and only bearer tokens are supported in the authorization header. 
 
 The proxy has the following advantages:
